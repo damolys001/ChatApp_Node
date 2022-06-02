@@ -1,0 +1,23 @@
+{
+  "name": "practice2",
+  "version": "1.0.0",
+  "description": "Practice node 2",
+  "main": "server.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.1",
+    "moment": "^2.29.3",
+    "mongoose": "^6.3.5",
+    "socket.io": "^4.5.1"
+  },
+  "devDependencies": {
+    "jasmine": "^4.1.0",
+    "nodemon": "^2.0.16",
+    "request": "^2.88.2"
+  }
+}

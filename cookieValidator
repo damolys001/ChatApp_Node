@@ -1,0 +1,16 @@
+async function cookieValidator (cookies) {
+    //console.log(cookies)
+  try 
+  {
+   let result= await externallyValidateCookie(cookies.testCookie)
+   console.log(result)
+  } 
+  catch (err)
+  {
+      
+      //console.log(err)
+    //  new Error('Invalid cookies')
+  }
+}
+
+module.exports = cookieValidator

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat App demo</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <link
+      href="http://localhost:3000/style.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+      integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js"
+      integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="/socket.io/socket.io.js" crossorigin="anonymous"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="mt-4 p-5 bg-primary text-white rounded">
+        <h1 class="display-4">Send Message</h1>
+        <p>A basic chatting app with socket io...</p>
+      </div>
+      <br />
+      <div class="card">
+        <div class="card-body" id="messageContainer"></div>
+        <div class="card-footer">
+          <input class="form-control" placeholder="Name" id="name" />
+          <br />
+          <textarea class="form-control" id="message"> </textarea>
+          <br />
+          <button id="send" class="btn btn-success">Send</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  $(() => {
+    let socket = io();
+    let thisUser = "";
+    getMessages();
+    let intialMessages;
+
+    $("#send").click(() => {
+      if (thisUser == "") {
+        thisUser = $("#name").val();
+        buildmessageBuble(intialMessages);
+      } else thisUser = $("#name").val();
+      $("#name").addClass("hidden");
+      addMessages({ name: $("#name").val(), message: $("#message").val() });
+    });
+
+    socket.on("message", buildmessageSingleBuble);
+
+    function addMessages(message) {
+      $.post("http://localhost:3000/messages", message, (data) => {
+        buildmessageSingleBuble(data);
+      });
+    }
+    function getMessages() {
+      $.get("http://localhost:3000/messages", (data) => {
+        buildmessageBuble(data);
+        intialMessages = data;
+      });
+    }
+    function buildmessageBuble(data) {
+      let messageBuild = "";
+      data.forEach((msg) => {
+        if (msg.name == thisUser) {
+          messageBuild += `<div class="row" style="margin-bottom:20px">
+        <div class="col-12 balon1 position-relative" data-is="${
+          "You - " + msg.time
+        }">
+            <a class="float-end"> ${msg.message} </a><br />
+         </div> </div>`;
+        } else {
+          messageBuild += `
+         <div
+            class="balon2 p-2 m-0 position-relative"
+            data-is="${msg.name + " - " + msg.time}"
+          >
+            <a class="float-left sohbet2"> ${msg.message} </a>
+          </div>`;
+        }
+      });
+      $("#messageContainer").html(messageBuild);
+    }
+    function buildmessageSingleBuble(msg) {
+      let messageBuild = "";
+
+      if (msg.name == thisUser) {
+        messageBuild += `<div class="row" style="margin-bottom:20px">
+        <div class="col-12 balon1 position-relative" data-is="${
+          "You - " + msg.time
+        }">
+            <a class="float-end"> ${msg.message} </a><br />
+         </div> </div>`;
+      } else {
+        messageBuild += `
+         <div
+            class="balon2 p-2 m-0 position-relative"
+            data-is="${msg.name + " - " + msg.time}"
+          >
+            <a class="float-left sohbet2"> ${msg.message} </a>
+          </div>`;
+      }
+
+      $("#messageContainer").append(messageBuild);
+    }
+  });
+</script>
